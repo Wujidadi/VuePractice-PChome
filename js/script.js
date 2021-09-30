@@ -6,23 +6,41 @@ const app = Vue.createApp({
             totalPage: 0,
             characters: [],
             mainColumns: [
-                { 'head': '番号',       'key': 'No'     },
-                { 'head': 'アカウント', 'key': 'Id'     },
-                { 'head': '氏名',       'key': 'Name'   },
-                { 'head': '職名',       'key': 'Title'  },
-                { 'head': '所属',       'key': 'Unit'   },
-                { 'head': 'メール',     'key': 'Email'  },
-                { 'head': '携帯電番',   'key': 'Mobile' }
+                { 'head': '番号',       'key': 'No',     'class': 'character-no'     },
+                { 'head': 'アカウント', 'key': 'Id',     'class': 'character-id'     },
+                { 'head': '氏名',       'key': 'Name',   'class': 'character-name'   },
+                { 'head': '職名',       'key': 'Title',  'class': 'character-title'  },
+                { 'head': '所属',       'key': 'Unit',   'class': 'character-unit'   },
+                { 'head': 'メール',     'key': 'Email',  'class': 'character-email'  },
+                { 'head': '携帯電番',   'key': 'Mobile', 'class': 'character-mobile' }
             ],
             detailColumns: [
-                { 'head': '性別',   'key': 'Gender'   },
-                { 'head': '誕生日', 'key': 'Birthday' },
-                { 'head': '出身地', 'key': 'Address'  }
+                { 'head': '性別',   'key': 'AlteredGender',   'class': 'character-gender'   },
+                { 'head': '誕生日', 'key': 'AlteredBirthday', 'class': 'character-birthday' },
+                { 'head': '出身地', 'key': 'AlteredAddress',  'class': 'character-address'  }
             ],
-            loading: null
+            loading: null,
+            initCharacter: {
+                'No': '',
+                'Id': '',
+                'Name': '',
+                'Gender': '1',
+                'Birthday': '01/01',
+                'Title': '',
+                'Unit': '',
+                'Email': '',
+                'Mobile': '',
+                'Address': ''
+            },
+            newCharacter: {},
+            currentCharacter: {}
         };
     },
     methods: {
+        characterInitiate() {
+            this.newCharacter = JSON.parse(JSON.stringify(this.initCharacter));
+            this.currentCharacter = JSON.parse(JSON.stringify(this.initCharacter));
+        },
         getTotalPage() {
             axios.get('api/character/counter')
             .then(response => {
@@ -35,7 +53,9 @@ const app = Vue.createApp({
             axios.get(`api/characters?p=${this.page}&c=${this.limit}`)
             .then(response => {
                 response.data.forEach(data => {
-                    data.Gender = this.convertGender(Number(data.Gender));
+                    data.AlteredGender = this.convertGender(Number(data.Gender));
+                    data.AlteredBirthday = this.convertBirthday(data.Birthday);
+                    data.AlteredAddress = this.convertAddress(data.Address);
                     data.DetailCollapse = true;
                 });
                 this.characters = response.data;
@@ -58,7 +78,6 @@ const app = Vue.createApp({
         changePage(page) {
             if (page !== this.page) {
                 this.page = page;
-                console.log(this.page);
                 this.getCharacters();
             }
         },
@@ -73,6 +92,44 @@ const app = Vue.createApp({
         },
         convertGender(gender) {
             return gender === 1 ? '男' : '女';
+        },
+        convertBirthday(birthday) {
+            if (birthday === null || birthday === '') {
+                return 'データ無し';
+            } else {
+                let date = birthday.split('/');
+                switch (date.length) {
+                    case 3:
+                        return `${Number(date[0])} 年 ${Number(date[1])} 月 ${Number(date[2])} 日`;
+
+                    case 2:
+                        return `${Number(date[0])} 月 ${Number(date[1])} 日`;
+
+                    default:
+                        return birthday;
+                }
+            }
+        },
+        convertAddress(address) {
+            return (address === null || address === '') ? 'データ無し' : address;
+        },
+        goToPreviousPage() {
+            if (!this.isFirstPage) {
+                this.page--;
+                this.getCharacters();
+            }
+        },
+        goToNextPage() {
+            if (!this.isFinalPage) {
+                this.page++;
+                this.getCharacters();
+            }
+        },
+        editCharacter(index) {
+            this.currentCharacter = JSON.parse(JSON.stringify(this.characters[index]));
+        },
+        deleteCharacter(index) {
+            console.log(this.characters[index].No);
         }
     },
     computed: {
@@ -82,6 +139,9 @@ const app = Vue.createApp({
         isFinalPage() {
             return this.page === this.totalPage ? true : null;
         }
+    },
+    created() {
+        this.characterInitiate();
     },
     mounted() {
         this.getTotalPage();
