@@ -1,0 +1,74 @@
+.hidden, [v-cloak] {
+    display: none;
+}
+
+div {
+    &#header-area {
+        margin: {
+            bottom: 2rem;
+        }
+        padding: {
+            top: 1rem;
+        }
+    }
+    &#loading-shade {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background-color: white;
+        opacity: 66.6666667%;
+        z-index: 5;
+
+        #loading-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+        }
+    }
+}
+
+#character {
+    width: calc(100vw - 4rem);
+    margin: {
+        left: auto;
+        right: auto;
+        bottom: 2rem;
+    }
+
+    .toggle-detail {
+        color: steelblue;
+        cursor: pointer;
+    }
+
+    $detail-info-bgcolor: lightblue;
+    td.detail-info {
+        padding: 0;
+        font-size: 0.9em;
+
+        th {
+            background-color: lighten($detail-info-bgcolor, 10%);
+        }
+        td {
+            background-color: lighten($detail-info-bgcolor, 15%);
+        }
+    }
+}
+
+.page-item {
+    a {
+        &.page-link {
+            cursor: pointer;
+
+            &[disabled] {
+                cursor: default;
+                color: lightgray;
+
+                &:hover {
+                    background-color: initial;
+                }
+            }
+        }
+    }
+}

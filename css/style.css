@@ -1,0 +1,61 @@
+.hidden, [v-cloak] {
+  display: none;
+}
+
+.collapse {
+  transition-property: height;
+  transition-duration: 5s;
+  transition-timing-function: linear;
+}
+
+div#header-area {
+  margin-bottom: 2rem;
+  padding-top: 1rem;
+}
+div#loading-shade {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  opacity: 66.6666667%;
+  z-index: 5;
+}
+div#loading-shade #loading-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3em;
+}
+
+table#character {
+  width: calc(100vw - 4rem);
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+}
+table#character .toggle-detail {
+  color: steelblue;
+  cursor: pointer;
+}
+table#character td.detail-info {
+  padding: 0;
+  font-size: 0.9em;
+}
+table#character td.detail-info th {
+  background-color: #d4ebf2;
+}
+table#character td.detail-info td {
+  background-color: #e8f4f8;
+}
+
+.page-item a.page-link {
+  cursor: pointer;
+}
+.page-item a.page-link[disabled] {
+  cursor: default;
+  color: lightgray;
+}
+.page-item a.page-link[disabled]:hover {
+  background-color: initial;
+}
