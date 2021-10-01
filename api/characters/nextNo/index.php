@@ -5,17 +5,21 @@ require_once '../../../bin/DbPeople.php';
 
 $allowedHttpMethod = 'GET';
 
-if (matchURI('counter'))
+if (matchURI('nextNo'))
 {
     if ($_SERVER['REQUEST_METHOD'] === $allowedHttpMethod)
     {
-        $sql = "SELECT COUNT(No) AS Counter FROM Characters;";
+        $sql = "SELECT MAX(No) AS MaxNo FROM Characters;";
         $query = $dbConn->prepare($sql);
         $query->execute();
         $result = $query->fetchAll(PDO::FETCH_ASSOC);
-
+    
+        $maxNo = $result[0]['MaxNo'];
+        $nextNo = str_pad((int) $maxNo + 1, 4, '0', STR_PAD_LEFT);
+        $data = [ 'NextNo' => $nextNo ];
+    
         header('Content-Type: application/json');
-        echo json_encode($result[0], 320);
+        echo json_encode($data, 320);
     }
     else
     {

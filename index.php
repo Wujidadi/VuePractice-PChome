@@ -18,7 +18,7 @@
         <!-- 頁面頂部 -->
         <div id="header-area">
             <h1 class="text-center">人員一覽</h1>
-            <div id="add-character" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-character-modal">新規作成</div>
+            <div id="add-character" class="btn btn-primary" v-on:click="showAddModal">新規作成</div>
         </div>
         <!-- 頁面主體 -->
         <div id="data-display-area" v-if="totalPage > 0" v-cloak>
@@ -36,10 +36,8 @@
                         <div class="row" v-bind:class="{ expanded: isDetailShown(characterIndex) }">
                             <div class="col td" v-for="column in mainColumns" v-bind:class="column.class">{{ character[column.key] }}</div>
                             <div class="col td control-buttons">
-                                <button class="btn btn-info me-1" v-on:click="editCharacter(characterIndex)"
-                                        data-bs-toggle="modal" data-bs-target="#edit-character-modal">編集</button>
-                                <button class="btn btn-danger" v-on:click="deleteCharacter(characterIndex)"
-                                        data-bs-toggle="modal" data-bs-target="#delete-character-modal">削除</button>
+                                <button class="btn btn-info me-1" v-on:click="showEditModal(characterIndex)">編集</button>
+                                <button class="btn btn-danger" v-on:click="showDeleteModal(characterIndex)">削除</button>
                             </div>
                             <div class="col td toggle-detail" v-on:click="toggleDetail(characterIndex)">{{ toggleDetailMark(characterIndex) }}</div>
                         </div>
@@ -105,7 +103,7 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col character-email-label">メール</div>
-                                <div class="col character-email-input"><input type="text" class="text-center" v-model="newCharacter.Mail"></div>
+                                <div class="col character-email-input"><input type="text" class="text-center" v-model="newCharacter.Email"></div>
                             </div>
                             <div class="row mt-2">
                                 <div class="col character-mobile-label">携帯電番</div>
@@ -118,8 +116,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">中止</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">確認</button>
+                        <button type="button" class="btn btn-secondary" id="add-character-modal-cancel" data-bs-dismiss="modal">中止</button>
+                        <button type="button" class="btn btn-primary" id="add-character-modal-submit" v-on:click="addCharacter">確認</button>
                     </div>
                 </div>
             </div>
@@ -136,9 +134,9 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col character-no-label">番号</div>
-                                <div class="col character-no-input"><input type="text" class="text-center" v-model="currentCharacter.No"></div>
+                                <div class="col character-no-input"><input type="text" class="text-center" v-model="currentCharacter.No" disabled></div>
                                 <div class="col character-id-label">アカウント</div>
-                                <div class="col character-id-input"><input type="text" class="text-center" v-model="currentCharacter.Id"></div>
+                                <div class="col character-id-input"><input type="text" class="text-center" v-model="currentCharacter.Id" disabled></div>
                             </div>
                             <div class="row mt-2">
                                 <div class="col character-name-label">氏名</div>
@@ -158,7 +156,7 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col character-email-label">メール</div>
-                                <div class="col character-email-input"><input type="text" class="text-center" v-model="currentCharacter.Mail"></div>
+                                <div class="col character-email-input"><input type="text" class="text-center" v-model="currentCharacter.Email"></div>
                             </div>
                             <div class="row mt-2">
                                 <div class="col character-mobile-label">携帯電番</div>
@@ -171,8 +169,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">中止</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">確認</button>
+                        <button type="button" class="btn btn-secondary" id="edit-character-modal-cancel" data-bs-dismiss="modal">中止</button>
+                        <button type="button" class="btn btn-primary" id="edit-character-modal-submit" v-on:click="editCharacter">確認</button>
                     </div>
                 </div>
             </div>
@@ -189,8 +187,8 @@
                         <div>本当にこの人員を削除していいのですか？</div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">中止</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">確認</button>
+                        <button type="button" class="btn btn-secondary" id="delete-character-modal-cancel" data-bs-dismiss="modal">中止</button>
+                        <button type="button" class="btn btn-primary" id="delete-character-modal-submit" v-on:click="deleteCharacter">確認</button>
                     </div>
                 </div>
             </div>

@@ -1,9 +1,11 @@
 const app = Vue.createApp({
     data() {
         return {
+            queryParams: {},
             page: 1,
             limit: 10,
             totalPage: 0,
+            nextNo: '',
             characters: [],
             mainColumns: [
                 { 'head': '番号',       'key': 'No',     'class': 'character-no'     },
@@ -33,13 +35,49 @@ const app = Vue.createApp({
                 'Address': ''
             },
             newCharacter: {},
-            currentCharacter: {}
+            currentCharacter: {},
+            oldEditingCharacter: {},
+            characterNoToDelete: '',
+            bsModal: {
+                'addModal': null,
+                'editModal': null,
+                'deleteModal': null
+            }
         };
     },
     methods: {
+        getQueryString() {
+            if (location.search !== '') {
+                let params = location.search.replace(/^\?/, '').split('&').forEach(element => {
+                    param = element.split('=');
+                    this.queryParams[param[0]] = param[1];
+                });
+                if (this.queryParams.p !== undefined) {
+                    this.page = this.queryParams.p;
+                }
+                if (this.queryParams.c !== undefined) {
+                    this.limit = this.queryParams.c;
+                }
+            }
+        },
+        getNextNo() {
+            axios.get('api/characters/nextNo')
+            .then(response => {
+                this.nextNo = response.data.NextNo;
+            })
+            .then(() => {
+                this.newCharacter.No = this.nextNo;
+            });
+        },
         characterInitiate() {
             this.newCharacter = JSON.parse(JSON.stringify(this.initCharacter));
             this.currentCharacter = JSON.parse(JSON.stringify(this.initCharacter));
+            this.getNextNo();
+        },
+        bsModalInitiate() {
+            this.bsModal.addModal = new bootstrap.Modal(document.querySelector('#add-character-modal'), { keyboard: false });
+            this.bsModal.editModal = new bootstrap.Modal(document.querySelector('#edit-character-modal'), { keyboard: false });
+            this.bsModal.deleteModal = new bootstrap.Modal(document.querySelector('#delete-character-modal'), { keyboard: false });
         },
         getTotalPage() {
             axios.get('api/character/counter')
@@ -125,11 +163,86 @@ const app = Vue.createApp({
                 this.getCharacters();
             }
         },
-        editCharacter(index) {
-            this.currentCharacter = JSON.parse(JSON.stringify(this.characters[index]));
+        showAddModal() {
+            this.bsModal.addModal.show();
         },
-        deleteCharacter(index) {
-            console.log(this.characters[index].No);
+        addCharacter() {
+            if (this.newCharacter.No == '' || this.newCharacter.Id == '') {
+                alert('番号とIDが必要です');
+            } else {
+                axios.post('api/character', this.newCharacter)
+                .then(response => {
+                    // console.log(response.data);
+                    this.bsModal.addModal.hide();
+                    this.getTotalPage();
+                    this.getCharacters();
+                })
+                .catch(error => {
+                    // console.log(error.response);
+                    alert(error.response.data.status);
+                });
+            }
+        },
+        showEditModal(index) {
+            this.currentCharacter = JSON.parse(JSON.stringify(this.characters[index]));
+            this.oldEditingCharacter = JSON.parse(JSON.stringify(this.characters[index]));
+            this.bsModal.editModal.show();
+        },
+        editCharacter(index) {
+            let counter = 0,
+                newData = {};
+            Object.keys(this.currentCharacter).forEach(key => {
+                if (this.currentCharacter[key] != this.oldEditingCharacter[key]) {
+                    counter++;
+                    newData[key] = this.currentCharacter[key];
+                }
+            });
+            if (counter > 0) {
+                newData.No = this.currentCharacter.No;
+                axios.patch('api/character', newData)
+                .then(response => {
+                    this.bsModal.editModal.hide();
+                    this.getCharacters();
+                })
+                .catch(error => {
+                    alert(error.response.data.status);
+                });
+            } else {
+                alert('新しいデータは旧いデータと同じ');
+            }
+        },
+        showDeleteModal(index) {
+            this.characterNoToDelete = this.characters[index].No;
+            this.bsModal.deleteModal.show();
+        },
+        deleteCharacter() {
+            let me = this;
+            axios.delete('api/character', {
+                data: {
+                    'No': this.characterNoToDelete
+                }
+            })
+            .then(response => {
+                this.bsModal.deleteModal.hide();
+                this.getCharacters();
+                this.getTotalPage();
+                if (this.characters.length - 1 === 0 && this.page > 1)
+                {
+                    this.page--;
+                    this.getCharacters();
+                };
+            })
+            .catch(error => {
+                console.log(error);
+                // alert(error.response.data.status);
+            });
+        },
+        cleanNewCharacter() {
+            document.querySelector('#add-character-modal')
+            .addEventListener('hidden.bs.modal', event => {
+                this.newCharacter = JSON.parse(JSON.stringify(this.initCharacter));
+                this.getNextNo();
+            });
         }
     },
     computed: {
@@ -141,9 +254,12 @@ const app = Vue.createApp({
         }
     },
     created() {
+        this.getQueryString();
         this.characterInitiate();
     },
     mounted() {
+        this.bsModalInitiate();
+        this.cleanNewCharacter();
         this.getTotalPage();
         this.getCharacters();
     }
