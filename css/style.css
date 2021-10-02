@@ -195,6 +195,11 @@ div#loading-shade #loading-hint {
   background-color: initial;
 }
 
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 600px;
+  }
+}
 .modal .modal-dialog {
   margin-top: 15vh;
 }
@@ -231,7 +236,7 @@ div#loading-shade #loading-hint {
   padding-right: 0;
 }
 .modal .modal-dialog .container-fluid .row .col.character-name-input {
-  max-width: 10em;
+  max-width: 11em;
   padding-left: 0;
   padding-right: 0;
 }
@@ -241,7 +246,7 @@ div#loading-shade #loading-hint {
   padding-right: 1em;
 }
 .modal .modal-dialog .container-fluid .row .col.character-gender-input {
-  max-width: 2em;
+  max-width: 5em;
   padding-left: 0;
   padding-right: 0;
 }
@@ -251,7 +256,7 @@ div#loading-shade #loading-hint {
   padding-right: 1em;
 }
 .modal .modal-dialog .container-fluid .row .col.character-birthday-input {
-  max-width: calc(100% - 3em - 10em - 4em - 2em - 5em);
+  max-width: calc(100% - 3em - 11em - 4em - 5em - 5em);
   padding-left: 0;
   padding-right: 0;
 }

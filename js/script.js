@@ -21,12 +21,13 @@ const app = Vue.createApp({
                 { 'head': '誕生日', 'key': 'AlteredBirthday', 'class': 'character-birthday' },
                 { 'head': '出身地', 'key': 'AlteredAddress',  'class': 'character-address'  }
             ],
+            basicPagination: 10,
             loading: null,
             initCharacter: {
                 'No': '',
                 'Id': '',
                 'Name': '',
-                'Gender': '1',
+                'Gender': 1,
                 'Birthday': '01/01',
                 'Title': '',
                 'Unit': '',
@@ -53,10 +54,10 @@ const app = Vue.createApp({
                     this.queryParams[param[0]] = param[1];
                 });
                 if (this.queryParams.p !== undefined) {
-                    this.page = this.queryParams.p;
+                    this.page = Number(this.queryParams.p);
                 }
                 if (this.queryParams.c !== undefined) {
-                    this.limit = this.queryParams.c;
+                    this.limit = Number(this.queryParams.c);
                 }
             }
         },
@@ -88,9 +89,10 @@ const app = Vue.createApp({
         },
         getCharacters() {
             this.loading = true;
-            axios.get(`api/characters?p=${this.page}&c=${this.limit}`)
+            axios.get(`api/characters/?p=${this.page}&c=${this.limit}`)
             .then(response => {
                 response.data.forEach(data => {
+                    data.Gender = Number(data.Gender);
                     data.AlteredGender = this.convertGender(Number(data.Gender));
                     data.AlteredBirthday = this.convertBirthday(data.Birthday);
                     data.AlteredAddress = this.convertAddress(data.Address);
@@ -113,9 +115,24 @@ const app = Vue.createApp({
                 };
             }
         },
+        pushPageToHistory(page) {
+            if (/\?[^?]*p=\d+/.test(location.href)) {
+                window.history.pushState({}, 0, location.href.replace(/p=\d+/, `p=${page}`));
+            } else {
+                let locationBody = location.origin + location.pathname,
+                    locationSearch = location.search;
+                if (/^\?/.test(locationSearch)) {
+                    locationSearch = locationSearch.replace(/^\?(.*)/, `?p=${page}&$1`);
+                    window.history.pushState({}, 0, locationBody + locationSearch);
+                } else {
+                    window.history.pushState({}, 0, `${locationBody}?p=${page}`);
+                }
+            }
+        },
         changePage(page) {
             if (page !== this.page) {
                 this.page = page;
+                this.pushPageToHistory(this.page);
                 this.getCharacters();
             }
         },
@@ -151,15 +168,29 @@ const app = Vue.createApp({
         convertAddress(address) {
             return (address === null || address === '') ? 'データ無し' : address;
         },
+        goToFirstPage() {
+            if (!this.isFirstPage) {
+                this.page = 1;
+                this.pushPageToHistory(this.page);
+                this.getCharacters();
+            }
+        },
         goToPreviousPage() {
             if (!this.isFirstPage) {
-                this.page--;
+                this.pushPageToHistory(--this.page);
                 this.getCharacters();
             }
         },
         goToNextPage() {
             if (!this.isFinalPage) {
-                this.page++;
+                this.pushPageToHistory(++this.page);
+                this.getCharacters();
+            }
+        },
+        goToFinalPage() {
+            if (!this.isFinalPage) {
+                this.page = this.totalPage;
+                this.pushPageToHistory(this.page);
                 this.getCharacters();
             }
         },
@@ -170,7 +201,8 @@ const app = Vue.createApp({
             if (this.newCharacter.No == '' || this.newCharacter.Id == '') {
                 alert('番号とIDが必要です');
             } else {
-                axios.post('api/character', this.newCharacter)
+                this.newCharacter.Gender = parseInt(this.newCharacter.Gender);
+                axios.post('api/character/', this.newCharacter)
                 .then(response => {
                     // console.log(response.data);
                     this.bsModal.addModal.hide();
@@ -194,12 +226,16 @@ const app = Vue.createApp({
             Object.keys(this.currentCharacter).forEach(key => {
                 if (this.currentCharacter[key] != this.oldEditingCharacter[key]) {
                     counter++;
-                    newData[key] = this.currentCharacter[key];
+                    if (key === 'Gender') {
+                        newData[key] = Number(this.currentCharacter[key]);
+                    } else {
+                        newData[key] = this.currentCharacter[key];
+                    }
                 }
             });
             if (counter > 0) {
                 newData.No = this.currentCharacter.No;
-                axios.patch('api/character', newData)
+                axios.patch('api/character/', newData)
                 .then(response => {
                     this.bsModal.editModal.hide();
                     this.getCharacters();
@@ -217,7 +253,7 @@ const app = Vue.createApp({
         },
         deleteCharacter() {
             let me = this;
-            axios.delete('api/character', {
+            axios.delete('api/character/', {
                 data: {
                     'No': this.characterNoToDelete
                 }
@@ -228,7 +264,7 @@ const app = Vue.createApp({
                 this.getTotalPage();
                 if (this.characters.length - 1 === 0 && this.page > 1)
                 {
-                    this.page--;
+                    this.pushPageToHistory(--this.page);
                     this.getCharacters();
                 };
             })
@@ -251,6 +287,44 @@ const app = Vue.createApp({
         },
         isFinalPage() {
             return this.page === this.totalPage ? true : null;
+        },
+        pagination()
+        {
+            let len = 1,
+                offset = 0;
+
+            if (this.totalPage <= this.basicPagination)
+            {
+                len = this.totalPage;
+                offset = 1;
+            }
+            else
+            {
+                len = this.basicPagination;
+
+                if (this.page > this.basicPagination && this.totalPage - this.page < this.basicPagination)
+                {
+                    offset = this.totalPage - this.basicPagination + 1;
+                }
+                else
+                {
+                    let tempPage = (this.page % this.basicPagination > 0) ? this.page : this.page - 1;
+                    offset = Math.floor(tempPage / this.basicPagination) * this.basicPagination + 1;
+                }
+            }
+
+            let pagination = Array.from({length: len}, (_, i) => i + offset);
+
+            if (pagination[0] > 1)
+            {
+                pagination.unshift(1);
+            }
+            if (pagination[pagination.length - 1] < this.totalPage)
+            {
+                pagination.push(this.totalPage);
+            }
+
+            return pagination;
         }
     },
     created() {

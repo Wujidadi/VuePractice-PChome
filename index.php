@@ -55,15 +55,21 @@
                 <nav aria-label="page navigation">
                     <ul class="pagination justify-content-center">
                         <li class="page-item">
+                            <a class="page-link" v-bind:disabled="isFirstPage" v-on:click="goToFirstPage">&lt;&lt;</a>
+                        </li>
+                        <li class="page-item">
                             <a class="page-link" v-bind:disabled="isFirstPage" v-on:click="goToPreviousPage">&lt;</a>
                         </li>
-                        <li v-for="page in totalPage"
+                        <li v-for="page in pagination"
                             v-bind:class="{ 'page-item': true, 'active': isCurrentPage(page).answer }"
                             v-bind:aria-current="isCurrentPage(page).ariaCurrent">
                             <a class="page-link" v-on:click="changePage(page)">{{ page }}</a>
                         </li>
                         <li class="page-item">
                             <a class="page-link" v-bind:disabled="isFinalPage" v-on:click="goToNextPage">&gt;</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" v-bind:disabled="isFinalPage" v-on:click="goToFinalPage">&gt;&gt;</a>
                         </li>
                     </ul>
                 </nav>
@@ -89,7 +95,14 @@
                                 <div class="col character-name-label">氏名</div>
                                 <div class="col character-name-input"><input type="text" class="text-center" v-model="newCharacter.Name"></div>
                                 <div class="col character-gender-label">性別</div>
-                                <div class="col character-gender-input"><input type="text" class="text-center" v-model="newCharacter.Gender"></div>
+                                <div class="col character-gender-input">
+                                    <div class="row d-flex align-items-center">
+                                        <input type="radio" id="add-character-gender-male" class="col text-center" value="1" v-model.number="newCharacter.Gender">
+                                        <label class="col" for="add-character-gender-male">男</label>
+                                        <input type="radio" id="add-character-gender-female" class="col text-center" value="0" v-model.number="newCharacter.Gender">
+                                        <label class="col" for="add-character-gender-female">女</label>
+                                    </div>
+                                </div>
                                 <div class="col character-birthday-label">誕生日</div>
                                 <div class="col character-birthday-input"><input type="text" class="text-center" v-model="newCharacter.Birthday"></div>
                             </div>
@@ -142,7 +155,14 @@
                                 <div class="col character-name-label">氏名</div>
                                 <div class="col character-name-input"><input type="text" class="text-center" v-model="currentCharacter.Name"></div>
                                 <div class="col character-gender-label">性別</div>
-                                <div class="col character-gender-input"><input type="text" class="text-center" v-model="currentCharacter.Gender"></div>
+                                <div class="col character-gender-input">
+                                    <div class="row d-flex align-items-center">
+                                        <input type="radio" id="edit-character-gender-male" class="col text-center" value="1" v-model.number="currentCharacter.Gender">
+                                        <label class="col" for="edit-character-gender-male">男</label>
+                                        <input type="radio" id="edit-character-gender-female" class="col text-center" value="0" v-model.number="currentCharacter.Gender">
+                                        <label class="col" for="edit-character-gender-female">女</label>
+                                    </div>
+                                </div>
                                 <div class="col character-birthday-label">誕生日</div>
                                 <div class="col character-birthday-input"><input type="text" class="text-center" v-model="currentCharacter.Birthday"></div>
                             </div>

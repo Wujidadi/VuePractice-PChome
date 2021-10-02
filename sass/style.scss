@@ -175,6 +175,12 @@ div {
     }
 }
 
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 600px;
+    }
+}
+
 .modal {
     .modal-dialog {
         margin-top: 15vh;
@@ -195,11 +201,11 @@ div {
                         'character-id-label'       7em                                          1em 1em,
                         'character-id-input'       #{calc(100% - 3em - 6em - 7em)}              0   0,
                         'character-name-label'     3em                                          0   0,
-                        'character-name-input'     10em                                         0   0,
+                        'character-name-input'     11em                                         0   0,
                         'character-gender-label'   4em                                          1em 1em,
-                        'character-gender-input'   2em                                          0   0,
+                        'character-gender-input'   5em                                          0   0,
                         'character-birthday-label' 5em                                          1em 1em,
-                        'character-birthday-input' #{calc(100% - 3em - 10em - 4em - 2em - 5em)} 0   0,
+                        'character-birthday-input' #{calc(100% - 3em - 11em - 4em - 5em - 5em)} 0   0,
                         'character-title-label'    3em                                          0   0,
                         'character-title-input'    #{calc(100% - 3em)}                          0   0,
                         'character-unit-label'     3em                                          0   0,
