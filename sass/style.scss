@@ -196,26 +196,26 @@ div {
                     }
 
                     $modal-columns:
-                        'character-no-label'       3em                                          0   0,
-                        'character-no-input'       6em                                          0   0,
-                        'character-id-label'       7em                                          1em 1em,
-                        'character-id-input'       #{calc(100% - 3em - 6em - 7em)}              0   0,
-                        'character-name-label'     3em                                          0   0,
-                        'character-name-input'     11em                                         0   0,
-                        'character-gender-label'   4em                                          1em 1em,
-                        'character-gender-input'   5em                                          0   0,
-                        'character-birthday-label' 5em                                          1em 1em,
-                        'character-birthday-input' #{calc(100% - 3em - 11em - 4em - 5em - 5em)} 0   0,
-                        'character-title-label'    3em                                          0   0,
-                        'character-title-input'    #{calc(100% - 3em)}                          0   0,
-                        'character-unit-label'     3em                                          0   0,
-                        'character-unit-input'     #{calc(100% - 3em)}                          0   0,
-                        'character-email-label'    5em                                          0   0,
-                        'character-email-input'    #{calc(100% - 4em)}                          0   0,
-                        'character-mobile-label'   5em                                          0   0,
-                        'character-mobile-input'   #{calc(100% - 5em)}                          0   0,
-                        'character-address-label'  5em                                          0   0,
-                        'character-address-input'  #{calc(100% - 4em)}                          0   0;
+                        'character-no-label'       3em                                            0   0,
+                        'character-no-input'       6em                                            0   0,
+                        'character-id-label'       7em                                            1em 1em,
+                        'character-id-input'       #{calc(100% - 3em - 6em - 7em)}                0   0,
+                        'character-name-label'     3em                                            0   0,
+                        'character-name-input'     12.5em                                         0   0,
+                        'character-gender-label'   4em                                            1em 1em,
+                        'character-gender-input'   5em                                            0   0,
+                        'character-birthday-label' 5em                                            1em 1em,
+                        'character-birthday-input' #{calc(100% - 3em - 12.5em - 4em - 5em - 5em)} 0   0,
+                        'character-title-label'    3em                                            0   0,
+                        'character-title-input'    #{calc(100% - 3em)}                            0   0,
+                        'character-unit-label'     3em                                            0   0,
+                        'character-unit-input'     #{calc(100% - 3em)}                            0   0,
+                        'character-email-label'    5em                                            0   0,
+                        'character-email-input'    #{calc(100% - 4em)}                            0   0,
+                        'character-mobile-label'   5em                                            0   0,
+                        'character-mobile-input'   #{calc(100% - 5em)}                            0   0,
+                        'character-address-label'  5em                                            0   0,
+                        'character-address-input'  #{calc(100% - 4em)}                            0   0;
                     @each $name, $width, $padding-left, $padding-right in $modal-columns {
                         &.#{$name} {
                             max-width: $width;

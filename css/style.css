@@ -236,7 +236,7 @@ div#loading-shade #loading-hint {
   padding-right: 0;
 }
 .modal .modal-dialog .container-fluid .row .col.character-name-input {
-  max-width: 11em;
+  max-width: 12.5em;
   padding-left: 0;
   padding-right: 0;
 }
@@ -256,7 +256,7 @@ div#loading-shade #loading-hint {
   padding-right: 1em;
 }
 .modal .modal-dialog .container-fluid .row .col.character-birthday-input {
-  max-width: calc(100% - 3em - 11em - 4em - 5em - 5em);
+  max-width: calc(100% - 3em - 12.5em - 4em - 5em - 5em);
   padding-left: 0;
   padding-right: 0;
 }
