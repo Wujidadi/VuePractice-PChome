@@ -48,8 +48,15 @@ div {
             top: 1rem;
         }
 
+        #pagination-switcher-box {
+            position: absolute;
+            top: 3rem;
+            left: 2rem;
+            width: 5em;
+        }
+
         #add-character {
-            position: fixed;
+            position: absolute;
             top: 3rem;
             right: 2rem;
         }

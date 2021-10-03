@@ -18,6 +18,11 @@
         <!-- 頁面頂部 -->
         <div id="header-area">
             <h1 class="text-center">人員一覽</h1>
+            <div id="pagination-switcher-box" class="float-start">
+                <select class="form-select" v-model.number="limit">
+                    <option v-for="option in limitOptions" v-bind:value="option">{{ option }}</option>
+                </select>
+            </div>
             <div id="add-character" class="btn btn-primary" v-on:click="showAddModal">新規作成</div>
         </div>
         <!-- 頁面主體 -->

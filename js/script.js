@@ -4,6 +4,7 @@ const app = Vue.createApp({
             queryParams: {},
             page: 1,
             limit: 10,
+            limitOptions: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40, 50, 60, 100 ],
             totalPage: 0,
             nextNo: '',
             characters: [],
@@ -98,6 +99,11 @@ const app = Vue.createApp({
             .then(response => {
                 counter = response.data.Counter;
                 this.totalPage = Math.ceil(counter / this.limit);
+                if (this.page > this.totalPage) {
+                    this.page = this.totalPage;
+                    this.pushPageToHistory(this.page);
+                    this.getCharacters();
+                }
             });
         },
         async getCharacters() {
@@ -139,6 +145,24 @@ const app = Vue.createApp({
                     window.history.pushState({}, 0, locationBody + locationSearch);
                 } else {
                     window.history.pushState({}, 0, `${locationBody}?p=${page}`);
+                }
+            }
+        },
+        pushLimitToHistory(limit) {
+            if (/\?[^?]*c=\d+/.test(location.href)) {
+                window.history.pushState({}, 0, location.href.replace(/c=\d+/, `c=${limit}`));
+            } else {
+                let locationBody = location.origin + location.pathname,
+                    locationSearch = location.search;
+                if (/^\?/.test(locationSearch)) {
+                    if (/p=\d+/.test(locationSearch)) {
+                        locationSearch = locationSearch.replace(/^\?(.*)(&?p=\d+)(.*)/, `?$1$2&c=${limit}$3`);
+                    } else {
+                        locationSearch = locationSearch.replace(/^\?(.*)/, `?p=${this.page}&c=${limit}&$1`);
+                    }
+                    window.history.pushState({}, 0, locationBody + locationSearch);
+                } else {
+                    window.history.pushState({}, 0, `${locationBody}?p=${this.page}&c=${limit}`);
                 }
             }
         },
@@ -344,6 +368,15 @@ const app = Vue.createApp({
             }
 
             return pagination;
+        }
+    },
+    watch: {
+        limit(newLimit, oldLimit) {
+            if (newLimit != oldLimit) {
+                this.pushLimitToHistory(newLimit);
+                this.getCharacters();
+                this.getTotalPage();
+            }
         }
     },
     created() {
