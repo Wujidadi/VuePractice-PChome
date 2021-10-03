@@ -76,9 +76,22 @@ const app = Vue.createApp({
             this.getNextNo();
         },
         bsModalInitiate() {
-            this.bsModal.addModal = new bootstrap.Modal(document.querySelector('#add-character-modal'), { keyboard: false });
-            this.bsModal.editModal = new bootstrap.Modal(document.querySelector('#edit-character-modal'), { keyboard: false });
-            this.bsModal.deleteModal = new bootstrap.Modal(document.querySelector('#delete-character-modal'), { keyboard: false });
+            const bsModalOption = { keyboard: true };
+
+            this.bsModal.addModal    = new bootstrap.Modal(document.querySelector('#add-character-modal'),    bsModalOption);
+            this.bsModal.editModal   = new bootstrap.Modal(document.querySelector('#edit-character-modal'),   bsModalOption);
+            this.bsModal.deleteModal = new bootstrap.Modal(document.querySelector('#delete-character-modal'), bsModalOption);
+
+            document.querySelector('#add-character-modal').addEventListener('shown.bs.modal', event => {
+                const el = document.querySelector('#add-character-modal .character-id-input input');
+                el.focus();
+            });
+
+            document.querySelector('#edit-character-modal').addEventListener('shown.bs.modal', event => {
+                const el = document.querySelector('#edit-character-modal .character-name-input input');
+                el.focus();
+                el.select();
+            });
         },
         async getTotalPage() {
             await axios.get('api/character/counter')
@@ -201,18 +214,20 @@ const app = Vue.createApp({
             if (this.newCharacter.No == '' || this.newCharacter.Id == '') {
                 alert('番号とIDが必要です');
             } else {
-                this.newCharacter.Gender = parseInt(this.newCharacter.Gender);
-                axios.post('api/character/', this.newCharacter)
-                .then(response => {
-                    // console.log(response.data);
-                    this.bsModal.addModal.hide();
-                    this.getTotalPage();
-                    this.getCharacters();
-                })
-                .catch(error => {
-                    // console.log(error.response);
-                    alert(error.response.data.status);
-                });
+                if (confirm('本当に送信していいの？')) {
+                    this.newCharacter.Gender = parseInt(this.newCharacter.Gender);
+                    axios.post('api/character/', this.newCharacter)
+                    .then(response => {
+                        // console.log(response.data);
+                        this.bsModal.addModal.hide();
+                        this.getTotalPage();
+                        this.getCharacters();
+                    })
+                    .catch(error => {
+                        // console.log(error.response);
+                        alert(error.response.data.status);
+                    });
+                }
             }
         },
         showEditModal(index) {
@@ -234,15 +249,17 @@ const app = Vue.createApp({
                 }
             });
             if (counter > 0) {
-                newData.No = this.currentCharacter.No;
-                axios.patch('api/character/', newData)
-                .then(response => {
-                    this.bsModal.editModal.hide();
-                    this.getCharacters();
-                })
-                .catch(error => {
-                    alert(error.response.data.status);
-                });
+                if (confirm('本当に送信していいの？')) {
+                    newData.No = this.currentCharacter.No;
+                    axios.patch('api/character/', newData)
+                    .then(response => {
+                        this.bsModal.editModal.hide();
+                        this.getCharacters();
+                    })
+                    .catch(error => {
+                        alert(error.response.data.status);
+                    });
+                }
             } else {
                 alert('新しいデータは旧いデータと同じ');
             }
@@ -277,8 +294,7 @@ const app = Vue.createApp({
             });
         },
         cleanNewCharacter() {
-            document.querySelector('#add-character-modal')
-            .addEventListener('hidden.bs.modal', event => {
+            document.querySelector('#add-character-modal').addEventListener('hidden.bs.modal', event => {
                 this.newCharacter = JSON.parse(JSON.stringify(this.initCharacter));
                 this.getNextNo();
             });
