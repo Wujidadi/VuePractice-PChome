@@ -80,16 +80,16 @@ const app = Vue.createApp({
             this.bsModal.editModal = new bootstrap.Modal(document.querySelector('#edit-character-modal'), { keyboard: false });
             this.bsModal.deleteModal = new bootstrap.Modal(document.querySelector('#delete-character-modal'), { keyboard: false });
         },
-        getTotalPage() {
-            axios.get('api/character/counter')
+        async getTotalPage() {
+            await axios.get('api/character/counter')
             .then(response => {
                 counter = response.data.Counter;
                 this.totalPage = Math.ceil(counter / this.limit);
             });
         },
-        getCharacters() {
+        async getCharacters() {
             this.loading = true;
-            axios.get(`api/characters/?p=${this.page}&c=${this.limit}`)
+            await axios.get(`api/characters/?p=${this.page}&c=${this.limit}`)
             .then(response => {
                 response.data.forEach(data => {
                     data.Gender = Number(data.Gender);
@@ -258,18 +258,21 @@ const app = Vue.createApp({
                     'No': this.characterNoToDelete
                 }
             })
-            .then(response => {
-                this.bsModal.deleteModal.hide();
-                this.getCharacters();
-                this.getTotalPage();
-                if (this.characters.length - 1 === 0 && this.page > 1)
-                {
-                    this.pushPageToHistory(--this.page);
-                    this.getCharacters();
-                };
+            .then(async response => {
+                me.bsModal.deleteModal.hide();
+                this.getNextNo();
+                await me.getCharacters();
+                await me.getTotalPage();
+                me.$nextTick(() => {
+                    if (me.characters.length === 0 && me.page > 1)
+                    {
+                        me.pushPageToHistory(--me.page);
+                        me.getCharacters();
+                    };
+                });
             })
             .catch(error => {
-                console.log(error);
+                console.warning(error);
                 // alert(error.response.data.status);
             });
         },
